@@ -21,14 +21,14 @@ Users.add(user)
   .catch(error => {res.status(500).json(error)});
 });
 
-router.post('/api/login', (req, res) => {
-  let { username, password } = req.body;
+router.post('/login', (req, res) => {
+  let { user, password } = req.body;
 
-  Users.findBy({ username })
+  Users.findBy({ user })
     .first()
-    .then(user => {
-      if (user) {
-        res.status(200).json({ message: `Welcome ${user.username}!` });
+    .then(user => {  
+      if (user && crypt.compareSync(password,user.password)) {
+        res.status(200).json({ message: `Welcome ${user.user}!` });
       } else {
         res.status(401).json({ message: 'Invalid Credentials' });
       }
@@ -38,10 +38,10 @@ router.post('/api/login', (req, res) => {
     });
 });
 
-router.get('/api/users', (req, res) => {
+router.get('/', (req, res) => {
   Users.find()
-    .then(users => {
-      res.json(users);
+    .then(user => {
+      res.json(user);
     })
     .catch(err => res.send(err));
 });
