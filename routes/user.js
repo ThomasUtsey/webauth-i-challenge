@@ -37,9 +37,23 @@ router.post('/login', (req, res) => {
       res.status(500).json(error);
     });
 });
-
-router.get('/', (req, res) => {
+function restricted(req,res,next){
+const {user,password}=req.headers;
+if (user && password){
+  Users.findBy({user}).first().then(user=>{
+   if( user && crypt.compareSync(password,user.password)){
+     next();
+   }else{
+    res.status(401).json({ message: 'Invalid Credentials' });
+   }
+  }).catch(err=>res.status(500).json({message:'unexpected error'}))
+}else{
+  res.status(401).json({ message: 'Invalid Credentials' });
+}
+}
+router.get('/', restricted, (req, res) => {
   Users.find()
+    
     .then(user => {
       res.json(user);
     })
