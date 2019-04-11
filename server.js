@@ -1,7 +1,8 @@
 const express = require('express'); // importing a CommonJS module
 
-const user = require('./routes/user')
+const cors = require('cors')
 
+const user = require('./routes/user')
 
 const helmet = require('helmet');
 
@@ -18,6 +19,7 @@ function logger(req,res,next){
 
 server.use(express.json());
 server.use(helmet());
+server.use(cors());
 server.use(morgan('dev'));
 server.use(logger);
 
