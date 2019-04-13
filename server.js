@@ -10,6 +10,8 @@ const morgan = require('morgan');
 
 const server = express();
 
+const session = require ('express-session')
+
 
 function logger(req,res,next){
   console.log(new Date(), req.method,req.url);
@@ -23,9 +25,22 @@ server.use(cors());
 server.use(morgan('dev'));
 server.use(logger);
 
-server.use('/api/user', user);
 
 
+
+const sessionConfig = {
+  name:'monkey',
+  secret:'keep it secret',
+  cookie: {
+    maxAge: 1000*60*60,
+    secure:false,
+  },
+  httpOnly:true,
+  resave:false,
+  saveUninitialized:false
+}
+
+server.use(session(sessionConfig));
 
 server.get('/', async (req, res) => {
   res.send(`
@@ -33,5 +48,6 @@ server.get('/', async (req, res) => {
     <p>Welcome to the Lambda Project API</p>
     `);
 });
+server.use('/api/user', user);
 
 module.exports = server;
